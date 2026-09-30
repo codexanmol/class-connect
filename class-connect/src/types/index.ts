@@ -1,76 +1,51 @@
-export type UserRole = 'student' | 'section_admin';
-
-export type VerificationStatus = 'pending' | 'approved' | 'rejected';
-
 export interface UserProfile {
-  id: string;
-  name: string;
+  uid: string;
+  displayName: string;
   email: string;
-  rollNumber: string;
-  sectionId: string;
   photoURL?: string;
-  role: UserRole;
-  verificationStatus: VerificationStatus;
+  role: 'student' | 'CR' | 'admin';
+  section: string; // e.g., 'CSE-A'
   auraPoints: number;
   createdAt: string;
 }
 
-export interface Section {
-  id: string;
-  name: string; // e.g., "CSE-Section-A"
-  department: string;
-  batch: string; // e.g., "2023-2027"
-  adminUserIds: string[];
-  inviteCode?: string;
-}
-
 export interface Subject {
   id: string;
-  sectionId: string;
-  name: string;
-  code: string;
-  description?: string;
-  unitCount: number;
+  code: string; // e.g., 'CS301'
+  name: string; // e.g., 'Database Management Systems'
+  instructor: string;
+  section: string;
+  color?: string;
 }
 
-export type ResourceType = 
-  | 'notes' 
-  | 'pyq' 
-  | 'important_questions' 
-  | 'assignment' 
-  | 'ppt' 
-  | 'lab' 
-  | 'question_bank' 
-  | 'reference' 
-  | 'other';
+export type ResourceType = 'PYQ' | 'Notes' | 'Assignment' | 'Syllabus' | 'Other';
 
 export interface Resource {
   id: string;
-  sectionId: string;
-  subjectId: string;
-  unit: number;
-  topic: string;
   title: string;
-  description: string;
-  resourceType: ResourceType;
+  description?: string;
+  subjectId: string;
+  subjectName: string;
+  type: ResourceType;
   fileUrl: string;
-  uploadedByUserId: string;
+  fileName: string;
+  fileSize?: string;
+  uploadedByUid: string;
   uploadedByName: string;
-  isTeacherProvided?: boolean;
-  helpfulCount: number;
+  uploadedByPhoto?: string;
+  upvotes: number;
+  upvotedBy: string[]; // UIDs of users who upvoted
   createdAt: string;
 }
 
-export type RequestStatus = 'open' | 'in_progress' | 'fulfilled' | 'closed';
-
 export interface ResourceRequest {
   id: string;
-  sectionId: string;
-  subjectId: string;
-  requestedByUserId: string;
-  requestedByName: string;
   title: string;
+  subjectName: string;
   description: string;
-  status: RequestStatus;
+  requestedByUid: string;
+  requestedByName: string;
+  status: 'pending' | 'fulfilled' | 'closed';
+  fulfilledResourceId?: string;
   createdAt: string;
 }
