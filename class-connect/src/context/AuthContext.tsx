@@ -29,27 +29,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(currentUser);
 
       if (currentUser) {
-        // Sync or create user profile in Firestore
-        const userRef = doc(db, 'users', currentUser.uid);
-        const userSnap = await getDoc(userRef);
+        try {
+          const userRef = doc(db, 'users', currentUser.uid);
+          const userSnap = await getDoc(userRef);
 
-        if (userSnap.exists()) {
-          setUserProfile(userSnap.data() as UserProfile);
-        } else {
-          // Initialize new student profile
-          const newProfile: UserProfile = {
-            uid: currentUser.uid,
-            displayName: currentUser.displayName || 'Anonymous Student',
-            email: currentUser.email || '',
-            photoURL: currentUser.photoURL || '',
-            role: 'student',
-            section: 'CSE-A', // Default section assignment
-            auraPoints: 50,  // +50 Welcome Bonus
-            createdAt: new Date().toISOString(),
-          };
+          if (userSnap.exists()) {
+            setUserProfile(userSnap.data() as UserProfile);
+          } else {
+            const newProfile: UserProfile = {
+              uid: currentUser.uid,
+              displayName: currentUser.displayName || 'Anonymous Student',
+              email: currentUser.email || '',
+              photoURL: currentUser.photoURL || '',
+              role: 'student',
+              section: 'CSE-A',
+              auraPoints: 50,
+              createdAt: new Date().toISOString(),
+            };
 
-          await setDoc(userRef, newProfile);
-          setUserProfile(newProfile);
+            await setDoc(userRef, newProfile);
+            setUserProfile(newProfile);
+          }
+        } catch (error) {
+          console.error('Error fetching user profile:', error);
         }
       } else {
         setUserProfile(null);
@@ -86,6 +88,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
+// Ensure this hook export is included at the bottom:
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
